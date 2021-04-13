@@ -1,6 +1,7 @@
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
-
+from textblob import TextBlob
+from textblob.sentiments import NaiveBayesAnalyzer
 """
 Performs sentiment analysis on a movie based on its dialogues
 and can create a movie poster background based on the sentiment
@@ -19,8 +20,8 @@ class SentimentAnalyzer:
 Using nltk's sentiment analyzer
 """
 class VaderAnalyzer(SentimentAnalyzer):
-    def __init__(self, conversations, movie_id):
-        super().__init__(conversations, movie_id)
+    def __init__(self, conversations):
+        super().__init__(conversations)
         nltk.download('vader_lexicon')
 
     def run_model(self):
@@ -61,5 +62,16 @@ class VaderAnalyzer(SentimentAnalyzer):
 Using TextBlob's Naive Bayes sentiment analyzer
 """
 class NaiveAnalyzer(SentimentAnalyzer):
+
     def run_model(self):
-        pass
+        scores = []
+        print("in model")
+        for conv in self.conversations:
+            blob = TextBlob(conv, analyzer=NaiveBayesAnalyzer())
+            scores.append(blob.sentiment)
+        self.__create_img(scores)
+
+    def __create_img(self, scores):
+        print(scores)
+        print(len(scores))
+

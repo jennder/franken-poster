@@ -1,6 +1,16 @@
 import json
-from sentiment_analyzer import VaderAnalyzer
+from sentiment_analyzer import VaderAnalyzer, NaiveAnalyzer
+import nltk
+import ssl
 
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
+nltk.download()
 class Parser:
     DELIMITER = " +++$+++ "
 
@@ -42,3 +52,7 @@ parser = Parser("m0")
 conversation = parser.parse()
 vader = VaderAnalyzer(conversation, "m0")
 vader.run_model()
+
+nb = NaiveAnalyzer(conversation)
+nb.run_model()
+
