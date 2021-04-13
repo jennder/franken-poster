@@ -6,8 +6,19 @@ and can create a movie poster background based on the sentiment
 of the conversations.
 """
 class SentimentAnalyzer:
+
     def __init__(self, movie_id):
-        pass
+        self.conversations = self.get_conversations(movie_id)
+
+    def get_conversations(self, movie_id):
+        """Read the movie conversations file and get all lines associated with
+        the given movie ID.
+
+        String -> [Listof String]
+        """
+        
+                
+
     
     def run_model(self):
         pass
