@@ -1,4 +1,5 @@
 import json
+from sentiment_analyzer import VaderAnalyzer
 
 class Parser:
     DELIMITER = " +++$+++ "
@@ -36,8 +37,8 @@ class Parser:
                     break
 
         return conversations
-"""
+
 parser = Parser("m0")
 conversation = parser.parse()
-print(conversation)
-"""
+vader = VaderAnalyzer(conversation)
+vader.run_model()
