@@ -15,7 +15,7 @@ class Parser:
                 #L1045 +++$+++ u0 +++$+++ m0 +++$+++ BIANCA +++$+++ They do not!
                 line = entry.split(self.DELIMITER)
                 # print(line)
-                line_id, char_id, movie, char, dialogue = line
+                line_id, _, movie, _, dialogue = line
                 if movie == self.movie_id:
                     movie_found = True
                     line_conv[line_id] = dialogue.strip()
@@ -27,7 +27,7 @@ class Parser:
             for entry in f:
                 #u0 +++$+++ u2 +++$+++ m0 +++$+++ ['L198', 'L199']
                 line = entry.split(self.DELIMITER)
-                char1, char2, movie, line_ids = line
+                _, _, movie, line_ids = line
                 if movie == self.movie_id:
                     movie_found = True
                     ids = json.loads(line_ids)
