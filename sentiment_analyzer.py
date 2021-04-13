@@ -7,16 +7,16 @@ of the conversations.
 """
 class SentimentAnalyzer:
 
-    def __init__(self, movie_id):
+    def __init__(self, conversations):
         self.conversations = self.get_conversations(movie_id)
 
-    def get_conversations(self, movie_id):
+    def get_conversations(self, conversations):
         """Read the movie conversations file and get all lines associated with
         the given movie ID.
 
         String -> [Listof String]
         """
-        
+        pass
                 
 
     
