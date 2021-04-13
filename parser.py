@@ -40,5 +40,5 @@ class Parser:
 
 parser = Parser("m0")
 conversation = parser.parse()
-vader = VaderAnalyzer(conversation)
+vader = VaderAnalyzer(conversation, "m0")
 vader.run_model()

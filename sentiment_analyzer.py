@@ -8,8 +8,9 @@ of the conversations.
 """
 class SentimentAnalyzer:
 
-    def __init__(self, conversations):
+    def __init__(self, conversations, movie_id):
         self.conversations = conversations
+        self.movie_id = movie_id
     
     def run_model(self):
         pass
@@ -18,8 +19,8 @@ class SentimentAnalyzer:
 Using nltk's sentiment analyzer
 """
 class VaderAnalyzer(SentimentAnalyzer):
-    def __init__(self, conversations):
-        super().__init__(conversations)
+    def __init__(self, conversations, movie_id):
+        super().__init__(conversations, movie_id)
         nltk.download('vader_lexicon')
 
     def run_model(self):
@@ -32,11 +33,29 @@ class VaderAnalyzer(SentimentAnalyzer):
         Generate svg string from sentiment scores where rgb values correspond to
         neg, pos and neutral values respectively.
         """
-        pass
-        # svg = """
-        #     <svg width="300" height="400" xmlns="http://www.w3.org/2000/svg">
-        #     <circle cx="25" cy="25" r="20"/>
-        #     </svg>"""
+        svg = f"""
+<svg width="600" height="800" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="Gradient{self.movie_id}" x1="0" x2="0" y1="0" y2="1">
+            {self.__gradient_offsets(scores)}
+        </linearGradient>
+    </defs>
+        <rect width="600" height="800" fill="url(#Gradient{self.movie_id})"/>
+</svg>"""
+        out_file = open('img/%s.svg' % self.movie_id, 'w')
+        out_file.write(svg)
+        out_file.close()
+    
+    def __gradient_offsets(self, scores):
+        tags = []
+        offset = 0
+        d_offset = 100 / (len(scores) - 1)
+        for idx, s in enumerate(scores):
+            if (idx == len(scores) - 1):
+                offset = 100
+            tags.append(f"""<stop offset="{offset}%" stop-color="rgb({s["neg"] * 256}, {s["pos"] * 256}, {s["neu"] * 256})"/>""")
+            offset += d_offset
+        return tags
 
 """
 Using TextBlob's Naive Bayes sentiment analyzer
