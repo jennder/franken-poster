@@ -1,16 +1,6 @@
 import json
 from sentiment_analyzer import VaderAnalyzer, NaiveAnalyzer
-import nltk
-import ssl
 
-try:
-    _create_unverified_https_context = ssl._create_unverified_context
-except AttributeError:
-    pass
-else:
-    ssl._create_default_https_context = _create_unverified_https_context
-
-nltk.download()
 class Parser:
     DELIMITER = " +++$+++ "
 
@@ -25,7 +15,6 @@ class Parser:
             for entry in f:
                 #L1045 +++$+++ u0 +++$+++ m0 +++$+++ BIANCA +++$+++ They do not!
                 line = entry.split(self.DELIMITER)
-                # print(line)
                 line_id, _, movie, _, dialogue = line
                 if movie == self.movie_id:
                     movie_found = True
@@ -45,7 +34,6 @@ class Parser:
                     conversations.append(" ".join([line_conv[id] for id in ids]))
                 elif movie_found:
                     break
-
         return conversations
 
 parser = Parser("m0")
@@ -53,6 +41,6 @@ conversation = parser.parse()
 vader = VaderAnalyzer(conversation, "m0")
 vader.run_model()
 
-nb = NaiveAnalyzer(conversation)
+nb = NaiveAnalyzer(conversation, "m0")
 nb.run_model()
 

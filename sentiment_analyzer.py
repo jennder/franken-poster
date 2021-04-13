@@ -20,9 +20,9 @@ class SentimentAnalyzer:
 Using nltk's sentiment analyzer
 """
 class VaderAnalyzer(SentimentAnalyzer):
-    def __init__(self, conversations):
-        super().__init__(conversations)
-        nltk.download('vader_lexicon')
+    def __init__(self, conversations, movie_id):
+        super().__init__(conversations, movie_id)
+        #nltk.download('vader_lexicon')
 
     def run_model(self):
         sia = SentimentIntensityAnalyzer()
@@ -65,10 +65,12 @@ class NaiveAnalyzer(SentimentAnalyzer):
 
     def run_model(self):
         scores = []
-        print("in model")
-        for conv in self.conversations:
+        for conv in self.conversations[0:5]:
+            print("conv")
             blob = TextBlob(conv, analyzer=NaiveBayesAnalyzer())
-            scores.append(blob.sentiment)
+            sent = blob.sentiment
+            format_scores = {"neg": sent.p_neg, "pos": sent.p_pos}
+            scores.append(format_scores)
         self.__create_img(scores)
 
     def __create_img(self, scores):
