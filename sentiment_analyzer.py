@@ -16,20 +16,7 @@ class SentimentAnalyzer:
     def run_model(self):
         pass
 
-"""
-Using nltk's sentiment analyzer
-"""
-class VaderAnalyzer(SentimentAnalyzer):
-    def __init__(self, conversations, movie_id):
-        super().__init__(conversations, movie_id)
-        #nltk.download('vader_lexicon')
-
-    def run_model(self):
-        sia = SentimentIntensityAnalyzer()
-        scores = [sia.polarity_scores(conv) for conv in self.conversations]
-        self.__create_img(scores)
-        
-    def __create_img(self, scores):
+    def create_img(self, scores, folder):
         """
         Generate svg string from sentiment scores where rgb values correspond to
         neg, pos and neutral values respectively.
@@ -43,7 +30,7 @@ class VaderAnalyzer(SentimentAnalyzer):
     </defs>
         <rect width="600" height="800" fill="url(#Gradient{self.movie_id})"/>
 </svg>"""
-        out_file = open('img/%s.svg' % self.movie_id, 'w')
+        out_file = open('img/%s/%s.svg' % (folder, self.movie_id), 'w')
         out_file.write(svg)
         out_file.close()
     
@@ -59,6 +46,20 @@ class VaderAnalyzer(SentimentAnalyzer):
         return tags
 
 """
+Using nltk's sentiment analyzer
+"""
+class VaderAnalyzer(SentimentAnalyzer):
+    def __init__(self, conversations, movie_id):
+        super().__init__(conversations, movie_id)
+        #nltk.download('vader_lexicon')
+
+    def run_model(self):
+        sia = SentimentIntensityAnalyzer()
+        scores = [sia.polarity_scores(conv) for conv in self.conversations]
+        self.create_img(scores, "vader")
+        
+
+"""
 Using TextBlob's Naive Bayes sentiment analyzer
 """
 class NaiveAnalyzer(SentimentAnalyzer):
@@ -66,14 +67,9 @@ class NaiveAnalyzer(SentimentAnalyzer):
     def run_model(self):
         scores = []
         for conv in self.conversations[0:5]:
-            print("conv")
             blob = TextBlob(conv, analyzer=NaiveBayesAnalyzer())
             sent = blob.sentiment
-            format_scores = {"neg": sent.p_neg, "pos": sent.p_pos}
+            format_scores = {"neg": sent.p_neg, "pos": sent.p_pos, "neu": 0} #TODO change this
             scores.append(format_scores)
-        self.__create_img(scores)
-
-    def __create_img(self, scores):
-        print(scores)
-        print(len(scores))
+        self.create_img(scores, "nb")
 
