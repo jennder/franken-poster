@@ -36,11 +36,14 @@ class Parser:
                     break
         return conversations
 
-parser = Parser("m0")
-conversation = parser.parse()
-vader = VaderAnalyzer(conversation, "m0")
-vader.run_model()
 
-nb = NaiveAnalyzer(conversation, "m0")
-nb.run_model()
+for i in range(0, 50):
+    id = "m%d" % i
+    print(id)
+    parser = Parser(id)
+    conversation = parser.parse()
+    vader = VaderAnalyzer(conversation, id)
+    vader.run_model()
 
+    nb = NaiveAnalyzer(conversation, id)
+    nb.run_model()
