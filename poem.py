@@ -10,6 +10,8 @@ from pickle import dump
 import spacy
 import en_core_web_sm
 nlp = en_core_web_sm.load()
+import re
+import random
 
 class PoemGen:
     POEM_LENGTH = 50
@@ -48,8 +50,42 @@ class PoemGen:
                     output_word = word
                     break
             input_phrase += " " + output_word
-    
-        return input_phrase
+        poem = self.segment(input_phrase)
+        return poem
+
+    def segment(self, poem):
+        """
+        Add line breaks to the poem according to the rules of poetry.
+        Rule based text processing
+        # TODO what are the rules
+
+        String -> String
+        """
+        
+        line_length = random.randint(5, 10)
+        index = 0
+        generate = ""
+        for word in poem.split():
+            if index > line_length:
+                generate += "\n"
+                index = 0
+                line_length = random.randint(5, 10)
+            generate += " " + word
+            index += self.count_syllables(word)
+
+        return generate
+
+
+    def count_syllables(self, word):
+        """Count the syllables in the given word with regex.
+        Look for a vowel followed by any number of consonants.
+
+        String -> Natural
+        """
+        syllables = r'[aeiou][b-df-hj-np-tv-z]+'
+        res = re.findall(syllables, word)
+        count = len(res)
+        return count if count > 0 else 1 # accounts for the, a, my
 
     
     def model_setup(self):
