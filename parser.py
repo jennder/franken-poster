@@ -1,6 +1,10 @@
 import json
 from sentiment_analyzer import VaderAnalyzer, NaiveAnalyzer
+from poem import PoemGen
 
+"""
+A class to parse information from the movie dialogues corpus
+"""
 class Parser:
     DELIMITER = " +++$+++ "
 
@@ -37,13 +41,17 @@ class Parser:
         return conversations
 
 
-for i in range(0, 50):
+for i in range(0, 1):
     id = "m%d" % i
     print(id)
     parser = Parser(id)
     conversation = parser.parse()
-    vader = VaderAnalyzer(conversation, id)
-    vader.run_model()
+    # vader = VaderAnalyzer(conversation, id)
+    # vader.run_model()
 
-    nb = NaiveAnalyzer(conversation, id)
-    nb.run_model()
+    # nb = NaiveAnalyzer(conversation, id)
+    # nb.run_model()
+
+    poem = PoemGen(conversation, id)
+    # poem.docs_to_sentences("%s.csv" % id)
+    print(poem.poem_generator("text/sentences_%s.csv" % id))
