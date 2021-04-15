@@ -53,5 +53,4 @@ for i in range(0, 1):
     # nb.run_model()
 
     poem = PoemGen(conversation, id)
-    # poem.docs_to_sentences("%s.csv" % id)
-    print(poem.poem_generator("text/sentences_%s.csv" % id))
+    poem.poem_generator()
