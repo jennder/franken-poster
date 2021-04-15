@@ -36,21 +36,39 @@ class Parser:
                     movie_found = True
                     ids = json.loads(line_ids)
                     conversations.append(" ".join([line_conv[id] for id in ids]))
-                elif movie_found:
+                elif movie_found: #TODO delete this, just return conversations above
                     break
         return conversations
 
+    def get_movie_title(self):
+        """
+        Get the movie title with the id of this parser.
 
-for i in range(0, 1):
-    id = "m%d" % i
+        Void -> String
+        """
+        with open("movie-dialogs-corpus/movie_titles_metadata.txt", "r", encoding="utf-8", errors="ignore") as f:
+            for entry in f:
+                #m0 +++$+++ 10 things i hate about you +++$+++ 1999 +++$+++ 6.90 +++$+++ 62847 +++$+++ ['comedy', 'romance']
+                line = entry.split(self.DELIMITER)
+                movie_id, title, _, _, _, _ = line
+                if movie_id == self.movie_id:
+                    return title
+
+def generate_poster(id):
     print(id)
     parser = Parser(id)
     conversation = parser.parse()
+    title = parser.get_movie_title()
     # vader = VaderAnalyzer(conversation, id)
     # vader.run_model()
 
     # nb = NaiveAnalyzer(conversation, id)
     # nb.run_model()
 
-    poem = PoemGen(conversation, id)
-    poem.poem_generator()
+    poem = PoemGen(conversation, id, title)
+    return poem.poem_generator()
+
+for i in range(0, 1):
+    id = "m%d" % i
+    print(generate_poster(id))
+

@@ -8,15 +8,24 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from pickle import dump
 import spacy
+import en_core_web_sm
+nlp = en_core_web_sm.load()
 
 class PoemGen:
+    POEM_LENGTH = 50
 
-    def __init__(self, conversations, movie_id):
+    def __init__(self, conversations, movie_id, title):
         self.conversations = [conv.lower() for conv in conversations]
         self.movie_id = movie_id
         self.sentences = []
+        self.title = title
 
     def poem_generator(self):
+        """
+        Generate a poem with POEM_LENGTH words following the movie title.
+
+        Void -> String
+        """
         # Load existing model if it exists for the movie
         try:
             model = load_model('text/model_%s.h5' % self.movie_id)
@@ -25,10 +34,10 @@ class PoemGen:
             model = self.create_model()
 
         #predicting the next word using an initial sentence
-        input_phrase = "10 things i hate about you" # TODO parse for movie title
-        next_words = 50
+        input_phrase = self.title
 
-        for _ in range(next_words):
+        # TODO split this out
+        for _ in range(self.POEM_LENGTH):
             tokenizer, max_sequence_len = self.model_setup()
             token_list = tokenizer.texts_to_sequences([input_phrase])[0]
             token_list = pad_sequences([token_list], maxlen=max_sequence_len-1, padding='pre') 
@@ -39,7 +48,8 @@ class PoemGen:
                     output_word = word
                     break
             input_phrase += " " + output_word
-        print(input_phrase)
+    
+        return input_phrase
 
     
     def model_setup(self):
@@ -60,7 +70,7 @@ class PoemGen:
 
 
     def create_model(self):
-        nlp = spacy.load("en_core_web_md")
+        #nlp = spacy.load("en_core_web_md")
        
         tokenizer, _ = self.model_setup()
         total_words = len(tokenizer.word_index) + 1
@@ -75,7 +85,7 @@ class PoemGen:
             total_words,
             embedding_dim,
             embeddings_initializer=Constant(embedding_matrix),
-            trainable=False,
+            trainable=True,
         )
         model = Sequential()
         model.add(embedding_layer)
@@ -89,7 +99,7 @@ class PoemGen:
         xs, labels = self.input_sequences[:,:-1],self.input_sequences[:,-1]
         ys = to_categorical(labels, num_classes=total_words)
 
-        model.fit(xs, ys, batch_size=128, epochs=10)
+        model.fit(xs, ys, batch_size=128, epochs=150)
 
         # Save model
         dump(tokenizer, open('tokenizer_%s' % self.movie_id, 'wb'))
