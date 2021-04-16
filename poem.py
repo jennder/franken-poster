@@ -8,10 +8,11 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from pickle import dump
 import spacy
-import en_core_web_sm
-nlp = en_core_web_sm.load()
+import en_core_web_md
 import re
 import random
+
+nlp = en_core_web_md.load()
 
 class PoemGen:
     POEM_LENGTH = 50
@@ -42,8 +43,9 @@ class PoemGen:
         for _ in range(self.POEM_LENGTH):
             tokenizer, max_sequence_len = self.model_setup()
             token_list = tokenizer.texts_to_sequences([input_phrase])[0]
-            token_list = pad_sequences([token_list], maxlen=max_sequence_len-1, padding='pre') 
-            predicted = np.argmax(model.predict(token_list), axis=-1)
+            token_list = pad_sequences([token_list], maxlen=max_sequence_len-1, padding='pre')
+            probs = model.predict(token_list)[0]
+            predicted = np.random.choice(range(0, len(probs)), p=probs)
             output_word = ""
             for word, index in tokenizer.word_index.items():
                 if index == predicted:
@@ -106,8 +108,6 @@ class PoemGen:
 
 
     def create_model(self):
-        #nlp = spacy.load("en_core_web_md")
-       
         tokenizer, _ = self.model_setup()
         total_words = len(tokenizer.word_index) + 1
 
