@@ -15,7 +15,6 @@ class Parser:
         """
         Get a list of all the conversations for the movie with the id of this parser
         from the Cornell movie dialogs corpus.
-
         Void -> String
         """
         movie_found = False
@@ -48,7 +47,6 @@ class Parser:
     def get_movie_title(self):
         """
         Get the movie title with the id of this parser.
-
         Void -> String
         """
         with open("movie-dialogs-corpus/movie_titles_metadata.txt", "r", encoding="utf-8", errors="ignore") as f:
