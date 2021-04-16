@@ -17,24 +17,23 @@ class SentimentAnalyzer:
     def run_model(self):
         pass
 
-    def create_img(self, scores, model):
+    def create_img(self, scores):
         """
         Generate svg string from sentiment scores where rgb values correspond to
-        neg, pos and neutral values respectively.
+        neg, pos and neutral values respectively. Not a complete svg, only
+        the background fill which will be added to the poster.
         scores: [Listof Number[-1, 1]], # scores for each individual conversation
+
+        return: part of an SVG string representing a rectangle with gradient fill
         """
-        svg = f"""
-<svg width="600" height="800" xmlns="http://www.w3.org/2000/svg">
+        return f"""
     <defs>
         <linearGradient id="Gradient{self.movie_id}" x1="0" x2="0" y1="0" y2="1">
             {self.__gradient_offsets(scores)}
         </linearGradient>
     </defs>
         <rect width="600" height="800" fill="url(#Gradient{self.movie_id})"/>
-</svg>"""
-        out_file = open('img/%s_%s.svg' % (self.movie_id, model), 'w')
-        out_file.write(svg)
-        out_file.close()
+        """
     
     def __gradient_offsets(self, scores):
         """
@@ -72,23 +71,22 @@ Using nltk's sentiment analyzer
 class VaderAnalyzer(SentimentAnalyzer):
     def __init__(self, conversations, movie_id):
         super().__init__(conversations, movie_id)
-        #nltk.download('vader_lexicon')
+        nltk.download('vader_lexicon')
 
     def run_model(self):
         sia = SentimentIntensityAnalyzer()
         scores = [sia.polarity_scores(conv)["compound"] for conv in self.conversations]
-        self.create_img(scores, "vader")
+        return self.create_img(scores)
         
 
 """
 Using TextBlob's Naive Bayes sentiment analyzer
 """
 class NaiveAnalyzer(SentimentAnalyzer):
-
     def run_model(self):
         scores = []
         for conv in self.conversations:
             blob = TextBlob(conv)
             sent = blob.sentiment
             scores.append(sent.polarity)
-        self.create_img(scores, "nb")
+        return self.create_img(scores)

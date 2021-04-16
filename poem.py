@@ -37,8 +37,9 @@ class PoemGen:
         # Load existing model if it exists for the movie
         try:
             model = load_model('text/model_%s.h5' % self.movie_id)
-            print("loaded")
+            print("Existing model loaded")
         except:
+            print("Training a new model. This may take a few minutes.")
             model = self.create_model(tokenizer)
 
         #predicting the next word using an initial sentence
