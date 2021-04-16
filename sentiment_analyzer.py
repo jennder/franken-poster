@@ -66,7 +66,6 @@ class SentimentAnalyzer:
         return (red, green, blue)
 
 
-
 """
 Using nltk's sentiment analyzer
 """

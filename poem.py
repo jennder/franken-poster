@@ -6,7 +6,6 @@ from keras.initializers import Constant
 from keras.utils import to_categorical
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
-from pickle import dump
 import spacy
 import en_core_web_md
 import re
@@ -14,6 +13,10 @@ import random
 
 nlp = en_core_web_md.load()
 
+"""
+A class that trains a model to generate a poem based on the movie dialogue
+of a given movie, and generates a poem to print on the movie poster.
+"""
 class PoemGen:
     POEM_LENGTH = 50
 
@@ -29,19 +32,18 @@ class PoemGen:
 
         Void -> String
         """
+        tokenizer, max_sequence_len = self.model_setup()
+
         # Load existing model if it exists for the movie
         try:
             model = load_model('text/model_%s.h5' % self.movie_id)
             print("loaded")
         except:
-            model = self.create_model()
+            model = self.create_model(tokenizer)
 
         #predicting the next word using an initial sentence
         input_phrase = self.title
-
-        # TODO split this out
         for _ in range(self.POEM_LENGTH):
-            tokenizer, max_sequence_len = self.model_setup()
             token_list = tokenizer.texts_to_sequences([input_phrase])[0]
             token_list = pad_sequences([token_list], maxlen=max_sequence_len-1, padding='pre')
             probs = model.predict(token_list)[0]
@@ -55,6 +57,7 @@ class PoemGen:
         poem = self.segment(input_phrase)
         return poem
 
+
     def segment(self, poem):
         """
         Add line breaks to the poem according to the rules of poetry.
@@ -63,7 +66,6 @@ class PoemGen:
 
         String -> String
         """
-        
         line_length = random.randint(5, 10)
         index = 0
         generate = ""
@@ -91,6 +93,12 @@ class PoemGen:
 
     
     def model_setup(self):
+        """
+        Sets up the model for generating a poem with a tokenizer, and splits the conversations
+        into sequences.
+
+        Void -> [Tupleof Tokenizer Int]
+        """
         tokenizer = Tokenizer()
         tokenizer.fit_on_texts(self.conversations)
         tokenizer.fit_on_sequences(self.conversations)
@@ -107,8 +115,14 @@ class PoemGen:
         return (tokenizer, max_sequence_len)
 
 
-    def create_model(self):
-        tokenizer, _ = self.model_setup()
+    def create_model(self, tokenizer):
+        """
+        Create and train a new Keras RNN model using pre-trained word embeddings from SpaCy,
+        and then training the model further on the movie conversation text. Saves the model
+        to the text/ folder once training is completed
+        
+        Tokenizer -> Model
+        """
         total_words = len(tokenizer.word_index) + 1
 
         # Use word embeddings from spacy
@@ -135,10 +149,8 @@ class PoemGen:
         xs, labels = self.input_sequences[:,:-1],self.input_sequences[:,-1]
         ys = to_categorical(labels, num_classes=total_words)
 
-        model.fit(xs, ys, batch_size=128, epochs=150)
+        model.fit(xs, ys, batch_size=128, epochs=200)
 
         # Save model
-        dump(tokenizer, open('tokenizer_%s' % self.movie_id, 'wb'))
         model.save('text/model_%s.h5' % self.movie_id)
-
         return model
