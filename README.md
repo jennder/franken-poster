@@ -5,7 +5,11 @@ The dataset that we use for this is the [Cornell movie dialogs corpus](https://w
 
 ## To run
 
-Make sure you have all dependencies installed as listed in `requirements.txt`. To generate two movie posters for a movie, run:
+Make sure you have all dependencies installed as listed in `requirements.txt` by running:
+
+`pip install -r requirements.txt`
+
+To generate two movie posters for a movie, run:
 
 `python poster.py`
 
