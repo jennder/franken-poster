@@ -33,7 +33,7 @@ We use Keras with SpaCy's medium English model `en_core_web_md` for pre-trained 
 
 **text/**
 
-We have already trained and saved a few models in the `text/` folder. Generating new posters with these existing models will be much faster, and will still generate different poems each time. If a movie without an existing model is chosen, the model will be trained from scratch and saved to this folder for future use. Most of these models are trained with 200 epochs. The existing sample models are labeled by their movie IDs. Movie `m0` (10 Things I Hate About You) has three sample models, where `model_m0_150.h5` and `model_m0_500.h5` were trained with 150 and 500 epochs, respectively.
+We have already trained and saved a few models in the `text/` folder. Generating new posters with these existing models will be much faster, and will still generate different poems each time. If a movie without an existing model is chosen, the model will be trained from scratch and saved to this folder for future use. These models are trained with 20 epochs. The existing sample models are labeled by their movie IDs.
 
 **img/**
 
