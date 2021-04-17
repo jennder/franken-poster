@@ -126,7 +126,7 @@ class PoemGen:
         """
         total_words = len(tokenizer.word_index) + 1
 
-        # Use word embeddings from spacy
+        # Use word embeddings from SpaCy
         embedding_dim = len(nlp('The').vector)
         embedding_matrix = np.zeros((total_words, embedding_dim))
         for i, word in enumerate(tokenizer.word_index.keys()):
@@ -140,8 +140,8 @@ class PoemGen:
         )
         model = Sequential()
         model.add(embedding_layer)
-        model.add(Bidirectional(LSTM(20)))
-        model.add(Dense(32, activation='relu'))
+        model.add(Bidirectional(LSTM(400)))
+        model.add(Dense(400, activation='relu'))
         model.add(Dropout(0.2))
         model.add(Dense(total_words, activation='softmax'))
         model.compile(
@@ -150,7 +150,7 @@ class PoemGen:
         xs, labels = self.input_sequences[:,:-1],self.input_sequences[:,-1]
         ys = to_categorical(labels, num_classes=total_words)
 
-        model.fit(xs, ys, batch_size=128, epochs=200)
+        model.fit(xs, ys, batch_size=128, epochs=20)
 
         # Save model
         model.save('text/model_%s.h5' % self.movie_id)
