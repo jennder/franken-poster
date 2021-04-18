@@ -13,11 +13,12 @@ class SentimentAnalyzer:
     def __init__(self, conversations, movie_id):
         self.conversations = conversations
         self.movie_id = movie_id
+        self.scores = []
     
     def run_model(self):
         pass
 
-    def create_img(self, scores):
+    def create_img(self):
         """
         Generate svg string from sentiment scores where rgb values correspond to
         neg, pos and neutral values respectively. Not a complete svg, only
@@ -29,22 +30,22 @@ class SentimentAnalyzer:
         return f"""
     <defs>
         <linearGradient id="Gradient{self.movie_id}" x1="0" x2="0" y1="0" y2="1">
-            {self.__gradient_offsets(scores)}
+            {self.__gradient_offsets()}
         </linearGradient>
     </defs>
         <rect width="600" height="800" fill="url(#Gradient{self.movie_id})"/>
         """
     
-    def __gradient_offsets(self, scores):
+    def __gradient_offsets(self):
         """
         Generates offset stop tags for the gradient rectangle background.
         """
         tags = []
         offset = 0
-        d_offset = 100 / (len(scores) - 1)
-        for idx, s in enumerate(scores):
+        d_offset = 100 / (len(self.scores) - 1)
+        for idx, s in enumerate(self.scores):
             red, green, blue = self.__get_color(s)
-            if (idx == len(scores) - 1):
+            if (idx == len(self.scores) - 1):
                 offset = 100
             tags.append(f"""<stop offset="{offset}%" stop-color="rgb({red}, {green}, {blue})"/>""")
             offset += d_offset
@@ -75,8 +76,8 @@ class VaderAnalyzer(SentimentAnalyzer):
 
     def run_model(self):
         sia = SentimentIntensityAnalyzer()
-        scores = [sia.polarity_scores(conv)["compound"] for conv in self.conversations]
-        return self.create_img(scores)
+        self.scores = [sia.polarity_scores(conv)["compound"] for conv in self.conversations]
+        return self.create_img()
         
 
 """
@@ -84,9 +85,9 @@ Using TextBlob's Naive Bayes sentiment analyzer
 """
 class NaiveAnalyzer(SentimentAnalyzer):
     def run_model(self):
-        scores = []
+        self.scores = []
         for conv in self.conversations:
             blob = TextBlob(conv)
             sent = blob.sentiment
-            scores.append(sent.polarity)
-        return self.create_img(scores)
+            self.scores.append(sent.polarity)
+        return self.create_img()
