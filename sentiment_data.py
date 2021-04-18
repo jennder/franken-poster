@@ -6,6 +6,9 @@ import numpy as np
 import plotly.express as px
 
 def get_data():
+    """
+    Save the sentiment scores of the first ten movies in the corpus to a csv file using both models.
+    """
     data = { 'movie_id': [], "conv_id": [], "vader": [], "nb": [] }
     for i in range(0, 10):
         parser = Parser("m%d" % i)
@@ -27,6 +30,10 @@ def get_data():
     return df
 
 def graph_single():
+    """
+    Create a scatterplot for the sentiment scores of a single movie for both
+    Vader and Naive Bayes models.
+    """
     df = pd.read_csv('data/sentiment_m0.csv')
     data = df.to_dict(orient="list")
     v = plt.scatter(data['conv_id'], data['vader'], color="pink", alpha=0.5)
@@ -39,6 +46,9 @@ def graph_single():
     plt.savefig("m0_sentiment.png")
 
 def bin(val):
+    """
+    Returns the categorical value of the given sentiment score.
+    """
     if val < -0.6:
         return "very_neg"
     elif val < -0.2 and val >= -0.6:
@@ -51,6 +61,11 @@ def bin(val):
         return "very_pos"
 
 def graph_group():
+    """
+    Create a graph comparing the sentiment value results of vader vs naive bayes models
+    by categorically sorting each value into one of five categories ranging from
+    very negative to very positive. Groups this for the first 10 movies in the corpus.
+    """
     order = ["very_neg", "slightly_neg", "neutral", "slightly_pos", "very_pos"]
     color_list = ["crimson", "coral", "cornflowerblue", "darkcyan", "chartreuse"]
     df = pd.read_csv('data/sentiment.csv')
