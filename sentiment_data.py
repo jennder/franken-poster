@@ -3,6 +3,7 @@ from parser import Parser
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import plotly.express as px
 
 def get_data():
     data = { 'movie_id': [], "conv_id": [], "vader": [], "nb": [] }
@@ -25,11 +26,61 @@ def get_data():
     df.to_csv("data/sentiment.csv")
     return df
 
-def graph():
+def graph_single():
     df = pd.read_csv('data/sentiment_m0.csv')
     data = df.to_dict(orient="list")
-    plt.scatter(data['conv_id'], data['vader'], color="pink")
-    plt.scatter(data['conv_id'], data['nb'], color="lightblue")
+    v = plt.scatter(data['conv_id'], data['vader'], color="pink", alpha=0.5)
+    n = plt.scatter(data['conv_id'], data['nb'], color="turquoise", alpha=0.5)
+    plt.title("Sentiment scores of conversations in 10 movies")
+    plt.xlabel("movie")
+    plt.ylabel("sentiment score")
+    plt.legend([v, n], ["Vader", "Naive Bayes"])
     plt.show()
+    plt.savefig("m0_sentiment.png")
 
-graph()
+def bin(val):
+    if val < -0.6:
+        return "very_neg"
+    elif val < -0.2 and val >= -0.6:
+        return "slightly_neg"
+    elif val < 0.2:
+        return "neutral"
+    elif val < 0.6:
+        return "slightly_pos"
+    else:
+        return "very_pos"
+
+def graph_group():
+    order = ["very_neg", "slightly_neg", "neutral", "slightly_pos", "very_pos"]
+    color_list = ["crimson", "coral", "cornflowerblue", "darkcyan", "chartreuse"]
+    df = pd.read_csv('data/sentiment.csv')
+    
+    df["vader_bin"] = df["vader"].map(bin)
+    df["nb_bin"] = df["nb"].map(bin)
+
+    df_v_grp = df[['vader_bin', 'movie_id', "vader"]]
+    df_v_grp.rename(columns={"vader_bin": "bin", "vader": "sentiment"}, inplace=True)
+    df_v_grp = df_v_grp.groupby(["movie_id", 'bin']).count()
+    df_v_grp.reset_index(inplace=True)
+
+    df_nb_grp = df[['nb_bin', 'movie_id', "nb"]]
+    df_nb_grp.rename(columns={"nb_bin": "bin", "nb": "sentiment"}, inplace=True)
+    df_nb_grp = df_nb_grp.groupby(["movie_id", 'bin']).count()
+    df_nb_grp.reset_index(inplace=True)
+    df_nb_grp["movie_id"] = df_nb_grp["movie_id"].map(lambda x: x + 0.3)
+
+    big_df = pd.concat([df_v_grp, df_nb_grp])
+    fig = px.bar(big_df, x="movie_id", y="sentiment", color="bin",
+                barmode = 'stack', category_orders={"bin": order},
+                color_discrete_sequence=color_list, title="Distribution of conversation sentiment scores",
+                labels={"movie_id": "movie", "sentiment": "conversation count"})
+    cols = [0, 0.3, 1, 1.3, 2, 2.3, 3, 3.3, 4, 4.3, 5, 5.3, 6, 6.3, 7, 7.3, 8, 8.3, 9, 9.3]
+    fig.update_layout(
+        xaxis = dict(
+            tickmode = 'array',
+            tickvals = cols,
+            ticktext = ["m%d %s" % (val // 1, "vader" if i % 2 == 0 else "nb")for i, val in enumerate(cols)]
+        ),
+        legend_title_text="Sentiment values"
+    )
+    fig.show()
