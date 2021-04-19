@@ -4,6 +4,14 @@ from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
 
 """
+Utilizing NLTK's VADER sentiment analyzer:
+
+Hutto, C.J. & Gilbert, E.E. (2014). VADER: A Parsimonious Rule-based Model for
+Sentiment Analysis of Social Media Text. Eighth International Conference on
+Weblogs and Social Media (ICWSM-14). Ann Arbor, MI, June 2014.
+"""
+
+"""
 Performs sentiment analysis on a movie based on its dialogues
 and can create a movie poster background based on the sentiment
 of the conversations.

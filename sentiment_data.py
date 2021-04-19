@@ -39,7 +39,7 @@ def graph_single():
     v = plt.scatter(data['conv_id'], data['vader'], color="pink", alpha=0.4)
     n = plt.scatter(data['conv_id'], data['nb'], color="turquoise", alpha=0.4)
     plt.title("Sentiment scores of conversations in 10 Things I Hate About You")
-    plt.xlabel("movie")
+    plt.xlabel("conversation id")
     plt.ylabel("sentiment score")
     plt.legend([v, n], ["Vader", "Naive Bayes"])
     plt.show()
